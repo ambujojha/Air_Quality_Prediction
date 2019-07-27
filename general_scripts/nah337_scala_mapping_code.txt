@@ -1,0 +1,66 @@
+// nah337 BDAD SUMMER FINAL PROJECT - 201907242350
+// The following are three functions i created to modify the code in scala/spark land
+// They give decsriptinve stats for the input, and map the output to a formate easy to work with come runtime
+// No normalizing will be done here - a min/max normalizer for our featurization / predicting will be done using:
+	// org.apache.spark.ml.feature.MinMaxScaler
+// Text fields wont be used so they can be left as they are
+// Checks need to be done with bad temp and lat long values that will need to be imputed
+
+
+def count_bad_temp(input_arr: Array[Any]): Int = {
+    return input_arr.count(x > 120)
+}
+
+
+def count_bad_lat(input_arr: Array[Any]): Int = {
+    return input_arr.count(x < 0)
+}
+
+
+def count_bad_long(input_arr: Array[Any]): Int = {
+    return input_arr.count(x > 70)
+}
+
+
+def aggregate_ln(input_arr: Array[Any]): (Int, Int, Float) = {
+    val min = input_arr.reduceLeft(_ min _)
+    val max = input_arr.reduceLeft(_ max _)
+    val mean = input_arr.sum / input_arr.size
+    return (min, max, mean)
+}
+
+
+def match_line(input_arr: Array[Any]): x match = {
+   case Array[Int] => aggregate_ln(input_arr)
+   case Array[Float] => aggregate_ln(input_arr)
+   case Array[String] => x.distinct
+   case _ => println("BROKEN LINE")
+}
+
+
+def create_data_mapping(input_arr: Array[Any]) = {
+	return Map(
+		"lat" -> input_arr[22]
+		"long" -> input_arr[24]
+		"name" -> input_arr[23]
+		"Temperature_F" -> input_arr[17]
+		"PM1_0_CF_1_ug_m3" -> input_arr[9]
+		"PM1_0_CF_ATM_ug_m3" -> input_arr[10]
+		"PM10_0_CF_ATM_ug_m3" -> input_arr[11]
+		"PM10_CF_1_ug_m3" -> input_arr[12]
+		"PM2_5_CF_1_ug_m3" -> input_arr[13]
+		"PM2_5_CF_ATM_ug_m3" -> input_arr[14]
+		"Pressure_hpa" -> input_arr[15]
+		"0_3um_dl" -> input_arr[0]
+		"0_5um_dl" -> input_arr[1]
+		"1_0um_dl" -> input_arr[2]
+		"10_0um_dl" -> input_arr[3]
+		"2_5um_dl" -> input_arr[4]
+		"5_0um_dl" -> input_arr[5]
+	)
+}
+
+// prints descriptive stats for each line 
+val output_data = rdd_list.map(x => match_line(x))
+// returns mapping for each row
+val mapped_data = rdd_list.map(x => create_data_mapping(x)) 
