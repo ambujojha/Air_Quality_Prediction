@@ -70,9 +70,27 @@ dfFinal.write.option("header", "true").format("csv").save("projectData/finalcsv"
 
 val relevantData = dfFinal.select("latitude", "longitude", "date_gmt", "date_local", "time_gmt", "time_local", "sample_duration", "sample_frequency", "sample_measurement")
 
+val df = spark.read.format("csv").option("header", "true").load("projectData/langLongZip.csv")
+
+val temp = relevantData.join(df, "latitude")
+
+val relDataZip = temp.select("latitude", "longitude", " zipcode", "county", "county_code", "date_gmt", "date_local", "time_gmt", "time_local", "sample_duration", "sample_frequency", "sample_measurement")
+
+val finalDataZip = relDataZip.withColumnRenamed(" zipcode", "zipcode")
+
+val sortData = finalDataZip.sort("date_gmt", "time_gmt")
+
+val weather = spark.read.format("csv").option("header", "true").option("inferSchema", "true").load("hdfs:///user/dx374/BDAD_Shared/Weather2019.csv")
+
+
+
 //Profile values
 val selectedColumnName = dfFinal.columns(0)
 dfFinal.agg(min(selectedColumnName), max(selectedColumnName)).show()
 
 val selectedColumnName = dfNotNull.columns(19)
 dfFinal.agg(min(selectedColumnName), max(selectedColumnName)).show()
+
+
+
+
