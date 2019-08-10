@@ -83,6 +83,13 @@ val metrics = new RegressionMetrics(valuesAndPreds)
 
 
 import math._
+import org.apache.spark.sql.functions._
+import spark.implicits._
+
+
+def get_mean_for_column(data: DataFrame, desired_col: String): DataFrame = {
+    return data.select(Seq(desired_col).map(mean(_)): _*).show()
+}
 
 def calculate_rmse(trues: Array[Double], preds: Array[Double]): Double = {
     // get list of tuples
@@ -108,3 +115,18 @@ def impute_na(values: Array[Double], limit: Double, default: Double): Array[Doub
     val list_tup = for (value <- values) yield isna(value, limit,default)
     return list_tup
 }
+
+
+def get_confidence(avg_error: Double, pred_i: Double, target_i: Double): Double = {
+    val this_confidence = 1 / (math.abs(target_i - pred_i)/ avg_error)
+    if (this_confidence > 1) {
+        return 1
+    }
+    else {
+        return this_confidence
+    }
+}
+
+
+
+
