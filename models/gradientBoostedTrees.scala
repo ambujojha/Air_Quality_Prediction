@@ -4,7 +4,7 @@ import org.apache.spark.mllib.tree.model.GradientBoostedTreesModel
 import org.apache.spark.mllib.util.MLUtils
 
 // Load and parse the data file.
-val data = MLUtils.loadLibSVMFile(sc, "data/mllib/sample_libsvm_data.txt")
+val data = MLUtils.loadLibSVMFile(sc, "projectData/featuresData")
 // Split the data into training and test sets (30% held out for testing)
 val splits = data.randomSplit(Array(0.7, 0.3))
 val (trainingData, testData) = (splits(0), splits(1))

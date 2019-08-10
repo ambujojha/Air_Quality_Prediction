@@ -3,7 +3,7 @@ import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 
 // load data file.
 val inputData = spark.read.format("libsvm")
-  .load("data/mllib/sample_multiclass_classification_data.txt")
+  .load("projectData/featuresData")
 
 // generate the train/test split.
 val Array(train, test) = inputData.randomSplit(Array(0.8, 0.2))
